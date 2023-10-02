@@ -1,23 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { Switch, Route } from "react-router-dom";
+import Header from "./Header";
+import Hero from "./Hero";
+import Home from "./Home";
+import HeroPowerForm from "./HeroPowerForm";
+import Power from "./Power";
+import PowerEditForm from "./PowerEditForm";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Header />
+      <main>
+        <Switch>
+          <Route exact path="/hero_powers/new">
+            <HeroPowerForm />
+          </Route>
+          <Route exact path="/powers/:id/edit">
+            <PowerEditForm />
+          </Route>
+          <Route exact path="/powers/:id">
+            <Power />
+          </Route>
+          <Route exact path="/heroes/:id">
+            <Hero />
+          </Route>
+          <Route exact path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </main>
     </div>
   );
 }
