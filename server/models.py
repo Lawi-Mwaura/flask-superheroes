@@ -60,7 +60,7 @@ class HeroPower(db.Model):
     updated_at = db.Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     hero = db.relationship('Hero', back_populates='hero_powers')
-    power = db.relationship('Power', back_populates='hero_powers')
+    power = db.relationship('Power', back_populates='hero_powers', foreign_keys=[power_id])
 
     def __init__(self, strength, hero, power):
         self.strength = strength

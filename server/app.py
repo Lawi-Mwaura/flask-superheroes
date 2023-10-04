@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from flask import Flask, make_response, jsonify, request
+from flask import Flask, jsonify, request
 from flask_migrate import Migrate
 from models import db, Hero, Power, HeroPower
 from flask_cors import CORS
@@ -7,7 +7,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.json.compact = False
 
 CORS(app)
 migrate = Migrate(app, db)
@@ -27,17 +26,15 @@ def heroes():
             'super_name': hero.super_name
         }
         heroes.append(hero_dict)
-    response = make_response(
-        jsonify(heroes),
-        200
-    )
-    return response
+
+    return jsonify(heroes)  # Serialize and return as JSON
 
 @app.route('/heroes/<int:id>', methods=['GET'])
 def get_hero_by_id(id):
     hero = Hero.query.get(id)
     if not hero:
         return jsonify({'error': 'Hero not found'}), 404
+
     hero_dict = {
         'id': hero.id,
         'name': hero.name,
@@ -50,39 +47,9 @@ def get_hero_by_id(id):
             'name': power.name,
             'description': power.description
         }
-        hero_dict['powers'].append(power_dict)   
+        hero_dict['powers'].append(power_dict)
 
     return jsonify(hero_dict)
-
-@app.route('/powers', methods=['GET'])
-def powers():
-    powers_list = []
-    for power in Power.query.all():
-        power_dict = {
-            'id': power.id,
-            'name': power.name,
-            'description': power.description
-        }
-        powers_list.append(power_dict)  
-
-    response = make_response(
-        jsonify(powers_list),
-        200
-    )
-    return response
-
-@app.route('/powers/<int:id>', methods=['GET'])
-def fetch_power(id):
-    power = Power.query.get(id)
-    if not power:
-        return jsonify({'error': 'Power not found'}), 404
-    power_dict = {
-        'id': power.id,
-        'name': power.name,
-        'description': power.description
-    }
-
-    return jsonify(power_dict)
 
 @app.route('/heroes/<int:id>', methods=['PATCH'])
 def update_hero(id):
@@ -107,6 +74,19 @@ def update_hero(id):
     db.session.commit()
 
     return jsonify({'message': 'Hero updated successfully'}), 200
+
+@app.route('/powers', methods=['GET'])
+def powers():
+    powers_list = []
+    for power in Power.query.all():
+        power_dict = {
+            'id': power.id,
+            'name': power.name,
+            'description': power.description
+        }
+        powers_list.append(power_dict)
+
+    return jsonify(powers_list)  # Serialize and return as JSON
 
 @app.route('/powers/<int:id>', methods=['PATCH'])
 def update_power(id):
@@ -157,11 +137,7 @@ def create_hero_power():
             "name": hero.name,
             "super_name": hero.super_name,
         }
-        response = make_response(
-            jsonify(hero_data),
-            200
-        )
-        return response   
+        return jsonify(hero_data)  # Serialize and return as JSON
     except Exception as e:
         db.session.rollback()
         return jsonify({"errors": [str(e)]}), 400
